@@ -2,6 +2,10 @@ import React from "react";
 import OnBoarding from "./_components/OnBoarding";
 import { Upload, Webcam } from "lucide-react";
 import FeatureCard from "./_components/FeatureCard";
+import FeatureSectionLayout from "./_components/FeatureSectionLayout";
+import Image from "next/image";
+import { potentialCustomer } from "@/lib/data";
+import { UserInfoCard } from "@/components/ReuseableComponents/UserInfoCard";
 
 const page = () => {
   return (
@@ -25,6 +29,59 @@ const page = () => {
             link="/webinars"
           />
         </div>
+      </div>
+      <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 rounded-xl bg-background-10">
+        <FeatureSectionLayout
+          heading="See how far along are you potential"
+          link="/lead"
+        >
+          <div className="p-5 flex flex-col gap-4 items-start border rounded-xl border-border backdrop-blur-3xl">
+            <div className="flex justify-between items-center w-full gap-3">
+              {" "}
+              <p className="text-primary font-semibold text-sm">Conversation</p>
+              <p className="text-muted-foreground font-normal text-xs">50</p>
+            </div>
+
+            <div className="flex flex-col gap-4 items-start">
+              {Array.from({ length: 3 }, (_, i) => (
+                <div
+                  key={i}
+                  className="p-5 flex flex-col gap-4 items-start border rounded-xl border-border backdrop-blur-3xl"
+                >
+                  <Image
+                    alt="Image"
+                    src="/featureCard.png"
+                    width={250}
+                    height={250}
+                    className="w-full h-full object-cover rounded-xl"
+                    key={i}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </FeatureSectionLayout>
+        <FeatureSectionLayout
+          heading="See the list of you current customers"
+          link="/pipeline"
+        >
+          <div className="flex gap-4 items-center h-full w-full justify-center relative flex-wrap">
+            {potentialCustomer.slice(0, 2).map((customer, index) => (
+              <UserInfoCard
+                customer={customer}
+                tags={customer.tags}
+                key={index}
+              />
+            ))}
+            <Image
+              alt="img"
+              src="/featureCard.png"
+              width={350}
+              height={350}
+              className="object-cover rounded-xl absolute px-5 mb-28 hidden sm:flex backdrop-blur-[20px]"
+            />
+          </div>
+        </FeatureSectionLayout>
       </div>
     </div>
   );

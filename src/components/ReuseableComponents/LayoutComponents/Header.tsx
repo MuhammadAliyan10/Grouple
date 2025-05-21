@@ -5,6 +5,7 @@ import { User } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Zap } from "lucide-react";
 import PurpleIcon from "../PurpleIcon";
+import CreateWebinarButton from "../CreateWebinarButton";
 
 type Props = { user: User };
 
@@ -30,6 +31,7 @@ const Header = ({ user }: Props) => {
         <PurpleIcon>
           <Zap />
         </PurpleIcon>
+        <CreateWebinarButton />
       </div>
     </div>
   );

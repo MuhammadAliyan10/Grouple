@@ -1,1 +1,47 @@
+import { CallStatusEnum } from "@prisma/client";
 
+export const potentialCustomer = [
+  {
+    id: "1",
+    name: "John Doe",
+    email: "Johndoe@gmail.com",
+    clerkId: "1",
+    profileImage: "/vercel.svg",
+    isActive: true,
+    lastLoginAt: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+    tags: ["New", "Hot Lead"],
+    callStatus: CallStatusEnum.COMPLETED,
+  },
+  {
+    id: "2",
+    name: "Jane Smith",
+    email: "janesmith@example.com",
+    clerkId: "2",
+    profileImage: "/avatar2.png",
+    isActive: false,
+    lastLoginAt: new Date(Date.now() - 1000 * 60 * 60 * 24),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+    tags: ["Interested"],
+    callStatus: CallStatusEnum.COMPLETED,
+  },
+
+  {
+    id: "3",
+    name: "Emily Davis",
+    email: "emilydavis@example.com",
+    clerkId: "4",
+    profileImage: "/avatar4.png",
+    isActive: true,
+    lastLoginAt: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+    tags: ["New"],
+    callStatus: CallStatusEnum.COMPLETED,
+  },
+];
