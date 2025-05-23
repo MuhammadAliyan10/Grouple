@@ -22,7 +22,10 @@ const page = async (props: Props) => {
   if (!userExist.user) {
     redirect("/");
   }
-  const stripeLink = getStripeOAuthLink("api/stipe-connect", userExist.user.id);
+  const stripeLink = getStripeOAuthLink(
+    "api/stripe-connect",
+    userExist.user.id
+  );
   const isConnected = !!userExist.user.stripeConnectId;
   return (
     <div className="w-full mx-auto py-8 px-4">
