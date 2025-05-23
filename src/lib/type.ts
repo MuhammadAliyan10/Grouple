@@ -78,3 +78,5 @@ export type AttendanceData = {
   count: number;
   user: Attendee[];
 };
+
+export const subscriptionPriceId = "price_1PfEAZDAvjzw3ABZgtBNNb3l";

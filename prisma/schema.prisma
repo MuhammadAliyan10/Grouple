@@ -55,7 +55,7 @@ model User {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   subscription      Boolean  @default(false)
-  stripeCoustomerId String?  @db.VarChar(255)
+  stripeCustomerId String?  @db.VarChar(255)
 
   @@index([email])
   @@index([clerkId])

@@ -3,16 +3,24 @@ import { Label } from "@/components/ui/label";
 import { useWebinarStore } from "@/store/useWebinarStore";
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CtaTypeEnum } from "@prisma/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Stripe from "stripe";
 
 type Props = {
   assistants: any[];
-  stripeProducts: any[];
+  stripeProducts: Stripe.Product[] | [];
 };
 
-const CTAStep = (props: Props) => {
+const CTAStep = ({ stripeProducts }: Props) => {
   const {
     formData,
     getStepValidationErrors,
@@ -40,6 +48,9 @@ const CTAStep = (props: Props) => {
   };
   const handleSelectCTAType = (value: string) => {
     updateCTAField("ctaType", value as CtaTypeEnum);
+  };
+  const handleProductChange = (value: string) => {
+    updateCTAField("priceId", value);
   };
   return (
     <div className="space-y-6">
@@ -129,6 +140,42 @@ const CTAStep = (props: Props) => {
             </TabsTrigger>
           </TabsList>
         </Tabs>
+      </div>
+      <div className="space-y-2">
+        <Label>Attach an Product</Label>
+        <div className="relative">
+          <div className="mb-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
+              <Input
+                placeholder="Search agents"
+                className="pl-9 !bg-background/50 border border-input"
+              />
+            </div>
+          </div>
+          <Select value={priceId} onValueChange={handleProductChange}>
+            <SelectTrigger className="w-full !bg-background/50 border border-input">
+              <SelectValue placeholder="Select a product" />
+            </SelectTrigger>
+            <SelectContent className="bg-background border border-input max-h-40">
+              {stripeProducts?.length > 0 ? (
+                stripeProducts.map((product) => (
+                  <SelectItem
+                    key={product.id}
+                    value={product.default_price?.toString() || ""}
+                    className="!bg-background/50 hover:!bg-white/10"
+                  >
+                    {product.name}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="null" disabled>
+                  Create product in stripe
+                </SelectItem>
+              )}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
     </div>
   );
