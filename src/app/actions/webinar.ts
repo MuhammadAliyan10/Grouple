@@ -94,3 +94,25 @@ export const createWebinar = async (formData: WebinarFormState) => {
     };
   }
 };
+export const getWebinarsByPresenterId = async (presenterId: string) => {
+  try {
+    const webinar = await prismaClient.webinar.findMany({
+      where: {
+        presenterId,
+      },
+      include: {
+        presenter: {
+          select: {
+            name: true,
+            stripeConnectId: true,
+            id: true,
+          },
+        },
+      },
+    });
+    return webinar;
+  } catch (error) {
+    console.log("Error fetching webinars", error);
+    return [];
+  }
+};

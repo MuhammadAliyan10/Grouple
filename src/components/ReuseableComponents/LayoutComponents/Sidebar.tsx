@@ -1,5 +1,5 @@
 "use client";
-import { Cone } from "lucide-react";
+import { Cone, Webcam } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { Home, Video, Users, Bot, Settings } from "lucide-react";
@@ -24,7 +24,7 @@ export const sidebarData = [
   {
     id: 1,
     title: "Webinars",
-    icon: <Video size={20} />,
+    icon: <Webcam size={20} />,
     link: "/webinars",
   },
   {
