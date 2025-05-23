@@ -1,4 +1,4 @@
-import { CtaTypeEnum } from "@prisma/client";
+import { Attendee, CtaTypeEnum } from "@prisma/client";
 
 export type ValidationErrors = Record<string, string>;
 export type ValidationResult = {
@@ -72,4 +72,9 @@ export const validateAdditionInfoField = (data: {
     valid: Object.keys(errors).length === 0,
     errors,
   };
+};
+
+export type AttendanceData = {
+  count: number;
+  user: Attendee[];
 };
