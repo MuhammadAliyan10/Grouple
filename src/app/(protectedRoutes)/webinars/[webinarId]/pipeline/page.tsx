@@ -6,6 +6,8 @@ import { AttendedTypeEnum } from "@prisma/client";
 import { Activity, AlignLeft, HomeIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import React from "react";
+import PipelineLayout from "./_components/PipelineLayout";
+import { formatColumnTitle } from "./_components/utils";
 
 type Props = {
   params: Promise<{
@@ -38,14 +40,13 @@ const page = async ({ params }: Props) => {
       />
       <div className="flex overflow-x-auto pb-4 gap-4 md:gap-6">
         {Object.entries(pipelineData.data).map(([columnType, columnData]) => (
-          <></>
-          // <PipelineLayout
-          //   key={columnType}
-          //   title={formatColumnTitle(columnType as AttendedTypeEnum)}
-          //   count={columnData.count}
-          //   users={columnData.users}
-          //   tags={pipelineData.webinarTags}
-          // />
+          <PipelineLayout
+            key={columnType}
+            title={formatColumnTitle(columnType as AttendedTypeEnum)}
+            count={columnData.count}
+            users={columnData.user}
+            tags={pipelineData.webinarTags}
+          />
         ))}
       </div>
     </div>
