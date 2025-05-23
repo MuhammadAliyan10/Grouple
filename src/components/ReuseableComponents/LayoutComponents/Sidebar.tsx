@@ -43,7 +43,7 @@ export const sidebarData = [
     id: 4,
     title: "Setting",
     icon: <Settings size={20} />,
-    link: "/setting",
+    link: "/settings",
   },
 ];
 

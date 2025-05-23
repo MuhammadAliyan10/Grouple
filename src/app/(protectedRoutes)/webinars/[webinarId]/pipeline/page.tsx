@@ -17,7 +17,7 @@ type Props = {
 
 const page = async ({ params }: Props) => {
   const checkUser = await onAuthenticateUser();
-  if (!checkUser) {
+  if (!checkUser.user) {
     redirect("/");
   }
   const { webinarId } = await params;
