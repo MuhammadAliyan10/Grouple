@@ -93,6 +93,8 @@ type WebinarStore = {
 
   validateStep: (stepId: keyof WebinarFormState) => boolean;
   getStepValidationErrors: (stepId: keyof WebinarFormState) => ValidationErrors;
+  addTag: (tag: string) => void;
+  removeTag: (tag: string) => void;
   resetForm: () => void;
 
   setModelOpen: (isOpen: boolean) => void;
@@ -174,5 +176,24 @@ export const useWebinarStore = create<WebinarStore>((set, get) => ({
       isSubmitting: false,
       formData: initialState,
       validation: initialValidationData,
+    }),
+  addTag: (tag: string) =>
+    set((state) => {
+      const newTags = [...(state.formData.cta.tags || []), tag];
+      const newCta = { ...state.formData.cta, tags: newTags };
+      return {
+        formData: { ...state.formData, cta: newCta },
+      };
+    }),
+  removeTag: (TagToRemove) =>
+    set((state) => {
+      const newTags = (state.formData.cta.tags || []).filter(
+        (tag) => tag !== TagToRemove
+      );
+
+      const newCta = { ...state.formData.cta, tags: newTags };
+      return {
+        formData: { ...state.formData, cta: newCta },
+      };
     }),
 }));
