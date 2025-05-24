@@ -5,6 +5,7 @@ import { onAuthenticateUser } from "./auth";
 import Stripe from "stripe";
 import { prismaClient } from "@/lib/prismaClient";
 import { subscriptionPriceId } from "@/lib/type";
+import { changeAttendanceType } from "./attendance";
 
 export const getAllProductsFromStripe = async () => {
   try {
@@ -93,5 +94,44 @@ export const updateSubscription = async (subscription: Stripe.Subscription) => {
     });
   } catch (error) {
     console.log("Internal Server error while updating subscription", error);
+  }
+};
+
+export const createCheckoutLink = async (
+  priceId: string,
+  stripeId: string,
+  userId: string,
+  webinarId: string,
+  bookCall: boolean = false
+) => {
+  try {
+    const session = await stripe.checkout.sessions.create(
+      {
+        line_items: [{ price: priceId, quantity: 1 }],
+        mode: "payment",
+        success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/`,
+        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/`,
+        metadata: {
+          attendeeId: userId,
+          webinarId: webinarId,
+        },
+      },
+      { stripeAccount: stripeId }
+    );
+    if (bookCall) {
+      await changeAttendanceType(userId, webinarId, "ADDED_TO_CART");
+    }
+    return {
+      sessionUrl: session.url,
+      status: 200,
+      success: true,
+    };
+  } catch (error) {
+    console.log("Internal server error", error);
+    return {
+      error: error,
+      status: 400,
+      success: false,
+    };
   }
 };

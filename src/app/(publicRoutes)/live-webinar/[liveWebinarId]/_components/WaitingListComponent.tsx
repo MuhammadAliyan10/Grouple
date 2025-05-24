@@ -53,7 +53,7 @@ const WaitingListComponent = ({
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const res = await registerAttendee(email, name, webinarId);
+      const res = await registerAttendee(name, email, webinarId);
       if (!res.success) {
         throw new Error(res.message || "Something went wrong.");
       }

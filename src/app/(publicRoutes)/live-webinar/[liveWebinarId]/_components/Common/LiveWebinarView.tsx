@@ -8,6 +8,7 @@ import { Chat, Channel, MessageList, MessageInput } from "stream-chat-react";
 import { Button } from "@/components/ui/button";
 import { CtaTypeEnum } from "@prisma/client";
 import "stream-chat-react/dist/css/v2/index.css";
+import CTADialogBox from "./CTADialogBox";
 
 type Props = {
   showChat: boolean;
@@ -130,7 +131,7 @@ const LiveWebinarView = ({
     return (
       <div className="w-full h-screen flex items-center justify-center">
         <Loader2 className="animate-spin mr-2" />
-        Loading chat...
+        Loading stream...
       </div>
     );
   }
@@ -225,6 +226,14 @@ const LiveWebinarView = ({
           </Chat>
         )}
       </div>
+      {dialogOpen && (
+        <CTADialogBox
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          webinar={webinar}
+          userId={userId}
+        />
+      )}
     </div>
   );
 };
