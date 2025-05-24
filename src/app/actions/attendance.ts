@@ -132,3 +132,78 @@ export const getWebinarAttendance = async (
     };
   }
 };
+
+export const registerAttendee = async (
+  webinarId: string,
+  email: string,
+  name: string
+) => {
+  try {
+    if (!webinarId || !email) {
+      return {
+        success: false,
+        status: 400,
+        message: "Missing required parameters",
+      };
+    }
+    const webinar = await prismaClient.webinar.findUnique({
+      where: { id: webinarId },
+    });
+    if (!webinar) {
+      return {
+        success: false,
+        status: 404,
+        message: "Webinar not found",
+      };
+    }
+    let attendee = await prismaClient.attendee.findUnique({
+      where: { email },
+    });
+    if (!attendee) {
+      attendee = await prismaClient.attendee.create({
+        data: { email, name },
+      });
+    }
+    const existingAttendee = await prismaClient.attendance.findFirst({
+      where: {
+        attendeeId: attendee.id,
+        webinarId: webinarId,
+      },
+      include: {
+        user: true,
+      },
+    });
+    if (existingAttendee) {
+      return {
+        success: true,
+        status: 200,
+        data: existingAttendee,
+        message: "You are already registered for webinar.",
+      };
+    }
+    const attendance = await prismaClient.attendance.create({
+      data: {
+        attendedType: AttendedTypeEnum.REGISTERED,
+        attendeeId: attendee.id,
+        webinarId: webinarId,
+      },
+      include: {
+        user: true,
+      },
+    });
+    revalidatePath(`/${webinarId}`);
+    return {
+      success: true,
+      status: 200,
+      data: attendance,
+      message: "Successful registered..",
+    };
+  } catch (error) {
+    console.log("Internal server error", error);
+    return {
+      success: false,
+      status: 400,
+      message: "Internal server error",
+    };
+  }
+};
