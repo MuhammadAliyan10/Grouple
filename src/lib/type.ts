@@ -79,4 +79,4 @@ export type AttendanceData = {
   user: Attendee[];
 };
 
-export const subscriptionPriceId = "price_1PfEAZDAvjzw3ABZgtBNNb3l";
+export const subscriptionPriceId = "price_1RSAdvDAvjzw3ABZXdcMVw72";

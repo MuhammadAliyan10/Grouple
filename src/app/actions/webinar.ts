@@ -4,6 +4,7 @@ import { WebinarFormState } from "@/store/useWebinarStore";
 import { onAuthenticateUser } from "./auth";
 import { prismaClient } from "@/lib/prismaClient";
 import { revalidatePath } from "next/cache";
+import { WebinarStatusEnum } from "@prisma/client";
 
 function combineDateTime(
   date: Date,
@@ -114,5 +115,58 @@ export const getWebinarsByPresenterId = async (presenterId: string) => {
   } catch (error) {
     console.log("Error fetching webinars", error);
     return [];
+  }
+};
+
+export const getWebinarById = async (webinarId: string) => {
+  try {
+    if (!webinarId) {
+      return {
+        status: 401,
+        message: "Webinar id required",
+      };
+    }
+    const webinarData = await prismaClient.webinar.findUnique({
+      where: {
+        id: webinarId,
+      },
+      include: {
+        presenter: {
+          select: {
+            id: true,
+            name: true,
+            profileImage: true,
+            stripeConnectId: true,
+          },
+        },
+      },
+    });
+    return webinarData;
+  } catch (error) {
+    console.log("Internal server error while fetching webinar data", error);
+  }
+};
+
+export const changeWebinarStatus = async (
+  webinarId: string,
+  webinarStatus: WebinarStatusEnum
+) => {
+  try {
+    const webinar = await prismaClient.webinar.update({
+      where: {
+        id: webinarId,
+      },
+      data: {
+        webinarStatus: webinarStatus,
+      },
+    });
+    return {
+      status: 200,
+      success: true,
+      data: webinar,
+      message: "Webinar updated successfully",
+    };
+  } catch (error) {
+    console.log("Internal server error", error);
   }
 };

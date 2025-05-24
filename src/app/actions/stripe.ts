@@ -79,3 +79,19 @@ export const getStripeClientSecret = async (email: string, userId: string) => {
     console.log("Internal server error", error);
   }
 };
+
+export const updateSubscription = async (subscription: Stripe.Subscription) => {
+  try {
+    const userId = subscription.metadata.userId;
+    await prismaClient.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        subscription: subscription.status == "active" ? true : false,
+      },
+    });
+  } catch (error) {
+    console.log("Internal Server error while updating subscription", error);
+  }
+};
