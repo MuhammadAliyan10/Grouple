@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useAttendeeStore } from "@/store/useAttendeeStore";
-import { WebinarStatusEnum } from "@prisma/client";
+import { CallStatusEnum, WebinarStatusEnum } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -62,7 +62,9 @@ const WaitingListComponent = ({
           id: res.data.user.id,
           name: res.data.user.name,
           email: res.data.user.email,
-          callStatus: "PENDING",
+          callStatus: "PENDING" as CallStatusEnum,
+          createdAt: new Date(),
+          updatedAt: new Date(),
         });
       }
       toast.success(

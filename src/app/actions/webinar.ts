@@ -34,12 +34,12 @@ export const createWebinar = async (formData: WebinarFormState) => {
         message: "Unauthorized",
       };
     }
-    // if (!user.user.subscription) {
-    //   return {
-    //     status: 402,
-    //     message: "Subscription Required",
-    //   };
-    // }
+    if (!user.user.subscription) {
+      return {
+        status: 402,
+        message: "Subscription Required",
+      };
+    }
     const presenterId = user.user.id;
     if (!formData.basicInfo.webinarName) {
       return { status: 404, message: "Webinar name is required." };

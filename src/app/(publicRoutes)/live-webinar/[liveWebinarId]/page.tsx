@@ -31,9 +31,9 @@ const page = async ({ params, searchParams }: Props) => {
       </div>
     );
   }
-  const apiKey = process.env.STREAM_API_KEY as string;
-  const token = process.env.STREAM_TOKEN as string;
-  const callId = process.env.STREAM_CALL_ID as string;
+  const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY! as string;
+  const token = process.env.STREAM_TOKEN! as string;
+  const callId = process.env.STREAM_CALL_ID! as string;
   return (
     <div className="w-full min-h-screen mx-auto">
       <RenderWebinar

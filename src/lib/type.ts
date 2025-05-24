@@ -1,4 +1,4 @@
-import { Attendee, CtaTypeEnum } from "@prisma/client";
+import { Attendee, CtaTypeEnum, User, Webinar } from "@prisma/client";
 
 export type ValidationErrors = Record<string, string>;
 export type ValidationResult = {
@@ -80,3 +80,7 @@ export type AttendanceData = {
 };
 
 export const subscriptionPriceId = "price_1RSAdvDAvjzw3ABZXdcMVw72";
+
+export type WebinarWithPresenter = Webinar & {
+  presenter: User;
+};
