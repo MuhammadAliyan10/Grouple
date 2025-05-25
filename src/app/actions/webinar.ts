@@ -95,11 +95,27 @@ export const createWebinar = async (formData: WebinarFormState) => {
     };
   }
 };
-export const getWebinarsByPresenterId = async (presenterId: string) => {
+export const getWebinarsByPresenterId = async (
+  presenterId: string,
+  webinarStatus?: string
+) => {
   try {
+    let webinarStatusFilter: WebinarStatusEnum | undefined;
+    switch (webinarStatus) {
+      case "upcoming":
+        webinarStatusFilter = WebinarStatusEnum.SCHEDULED;
+        break;
+      case "ended":
+        webinarStatusFilter = WebinarStatusEnum.ENDED;
+        break;
+      default:
+        webinarStatusFilter = undefined;
+        break;
+    }
     const webinar = await prismaClient.webinar.findMany({
       where: {
         presenterId,
+        webinarStatus: webinarStatusFilter,
       },
       include: {
         presenter: {

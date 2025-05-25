@@ -19,7 +19,6 @@ import { onAuthenticateUser } from "@/app/actions/auth";
 import { fetchAttendeeWebinar } from "@/app/actions/attendance";
 import { toast } from "sonner";
 
-// Define TypeScript interface for attendee data
 interface AttendeeData {
   id: string;
   user: {
@@ -47,7 +46,6 @@ const page = async () => {
     );
   }
 
-  // Fetch attendees for all webinars presented by the user
   const webinarAttendeeData = await fetchAttendeeWebinar(user.user.id);
   if (!webinarAttendeeData.success || !webinarAttendeeData.data) {
     toast.error(

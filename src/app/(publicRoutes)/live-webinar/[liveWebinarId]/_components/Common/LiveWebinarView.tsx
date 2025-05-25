@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { CtaTypeEnum } from "@prisma/client";
 import "stream-chat-react/dist/css/v2/index.css";
 import CTADialogBox from "./CTADialogBox";
+import { changeWebinarStatus } from "@/app/actions/webinar";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type Props = {
   showChat: boolean;
@@ -33,11 +36,29 @@ const LiveWebinarView = ({
   const viewersCount = useParticipantCount();
   const participants = useParticipants();
   const [chatClient, setChatClient] = useState<StreamChat | null>(null);
+  const [loading, setLoading] = useState(false);
   const [channel, setChannel] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const hostParticipant = participants.length > 0 ? participants[0] : null;
+  const router = useRouter();
 
+  const handleEndStream = async () => {
+    setLoading(true);
+    try {
+      const webinarState = await changeWebinarStatus(webinar.id, "ENDED");
+      if (!webinarState?.success) {
+        toast.error(webinarState?.message);
+      } else {
+        toast.success("Stream ended successfully.");
+        router.refresh();
+      }
+    } catch (error) {
+      console.log("Error", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     const initChat = async () => {
       // Validate inputs
@@ -196,15 +217,34 @@ const LiveWebinarView = ({
                 {webinar?.title}
               </div>
             </div>
-            {isHost && (
-              <div className="flex items-center space-x-1">
-                <Button onClick={handleCTAButtonClick}>
-                  {webinar.ctaType === CtaTypeEnum.BOOK_A_CALL
-                    ? "Book a call"
-                    : "Buy Now"}
-                </Button>
-              </div>
-            )}
+            <div className="flex justify-between items-center gap-x-2">
+              {isHost && (
+                <div className="flex items-center space-x-1">
+                  <Button
+                    onClick={handleEndStream}
+                    disabled={loading}
+                    variant={"outline"}
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="animate-spin mr-2" /> Loading...
+                      </>
+                    ) : (
+                      "End Stream"
+                    )}
+                  </Button>
+                </div>
+              )}
+              {isHost && (
+                <div className="flex items-center space-x-1">
+                  <Button onClick={handleCTAButtonClick} variant={"outline"}>
+                    {webinar.ctaType === CtaTypeEnum.BOOK_A_CALL
+                      ? "Book a call"
+                      : "Buy Now"}
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         {showChat && (

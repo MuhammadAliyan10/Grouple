@@ -8,6 +8,9 @@ import { toast } from "sonner";
 import LiveStreamState from "./LiveWebinar/LiveStreamState";
 import { WebinarWithPresenter } from "@/lib/type";
 import Participant from "./Particiapnt/Participant";
+import { Button } from "@/components/ui/button";
+import { Undo2 } from "lucide-react";
+import Link from "next/link";
 
 type Props = {
   apiKey: string;
@@ -39,11 +42,13 @@ const RenderWebinar = ({
     <React.Fragment>
       {webinar.webinarStatus === WebinarStatusEnum.SCHEDULED ? (
         <WebinarUpcomingState
+          title="The webinar has not yet started. Please check back closer to the scheduled time."
           webinar={webinar}
           currentUser={checkUser || null}
         />
       ) : webinar?.webinarStatus === WebinarStatusEnum.WAITING_ROOM ? (
         <WebinarUpcomingState
+          title="The webinar is about to begin. Please stand by."
           webinar={webinar}
           currentUser={checkUser || null}
         />
@@ -61,6 +66,7 @@ const RenderWebinar = ({
             <Participant apiKey={apiKey} webinar={webinar} callId={callId} />
           ) : (
             <WebinarUpcomingState
+              title="The webinar is about to begin. Please stand by."
               webinar={webinar}
               currentUser={checkUser || null}
             />
@@ -73,12 +79,30 @@ const RenderWebinar = ({
               {webinar.title}
             </h3>
             <p className="text-muted-foreground text-xs">
-              This webinar has been canceled.
+              We regret to inform you that this webinar has been cancelled.
             </p>
+          </div>
+        </div>
+      ) : webinar?.webinarStatus === WebinarStatusEnum.ENDED ? (
+        <div className="flex justify-center items-center h-screen w-full">
+          <div className="text-center space-y-4">
+            <h3 className="text-2xl font-semibold text-primary">
+              {webinar.title}
+            </h3>
+            <p className="text-muted-foreground text-xs">
+              This webinar has concluded. Thank you for your interest.
+            </p>
+            <Link href={"/webinars"}>
+              <Button variant={"outline"}>
+                <Undo2 className="w-4 h-4 mr-1" />
+                Go back
+              </Button>
+            </Link>
           </div>
         </div>
       ) : (
         <WebinarUpcomingState
+          title="The webinar is about to begin. Please stand by."
           webinar={webinar}
           currentUser={checkUser || null}
         />

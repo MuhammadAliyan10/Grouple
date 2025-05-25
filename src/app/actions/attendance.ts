@@ -21,6 +21,7 @@ export const getWebinarAttendance = async (
         id: true,
         ctaType: true,
         tags: true,
+        presenter: true,
         _count: {
           select: {
             attendances: true,
@@ -112,16 +113,18 @@ export const getWebinarAttendance = async (
             attendedAt: attendance.joinedAt,
             stripConnectId: null,
             callStatus: attendance.user.callStatus,
+            createdAt: attendance.user.createdAt,
+            updatedAt: attendance.user.updatedAt,
           }));
         }
       }
     }
-    // revalidatePath(`/webinars/${webinarId}/pipeline`);
     return {
       success: true,
       data: result,
       ctaType: webinar.ctaType,
       webinarTags: webinar.tags || [],
+      presenter: webinar.presenter,
     };
   } catch (error) {
     console.log(error);
@@ -352,7 +355,6 @@ export const fetchAttendeeWebinar = async (
   userId: string
 ): Promise<FetchAttendeeWebinarResponse> => {
   try {
-    // Validate UUID format for userId
     if (!isValidUUID(userId)) {
       return {
         success: false,
@@ -362,7 +364,6 @@ export const fetchAttendeeWebinar = async (
       };
     }
 
-    // Fetch webinars where the user is the presenter
     const webinars = await prismaClient.webinar.findMany({
       where: {
         presenterId: userId,
@@ -388,7 +389,6 @@ export const fetchAttendeeWebinar = async (
       },
     });
 
-    // If no webinars found, return an empty but successful response
     if (!webinars || webinars.length === 0) {
       return {
         success: true,
@@ -398,7 +398,6 @@ export const fetchAttendeeWebinar = async (
       };
     }
 
-    // Flatten and format the attendance data
     const formattedData: AttendeeData[] = webinars.flatMap((webinar) =>
       webinar.attendances.map((attendance) => ({
         id: attendance.id,
@@ -417,7 +416,6 @@ export const fetchAttendeeWebinar = async (
       }))
     );
 
-    // If no attendances found, return an empty but successful response
     if (formattedData.length === 0) {
       return {
         success: true,

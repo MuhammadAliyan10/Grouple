@@ -6,8 +6,12 @@ import { Activity, HomeIcon, Webcam } from "lucide-react";
 import { redirect } from "next/navigation";
 import React from "react";
 import WebinarCard from "./_components/WebinarCard";
-import { Webinar } from "@prisma/client";
-
+import { Webinar, WebinarStatusEnum } from "@prisma/client";
+// type props = {
+//   searchParam: Promise<{
+//     webinarStatus: string | undefined;
+//   }>;
+// };
 const page = async () => {
   const checkUser = await onAuthenticateUser();
   if (!checkUser.user) {
@@ -20,6 +24,9 @@ const page = async () => {
   const endedWebinars = webinars.filter(
     (webinar) =>
       webinar.webinarStatus === "ENDED" || webinar.webinarStatus === "CANCELLED"
+  );
+  const liveWebinars = webinars.filter(
+    (webinar) => webinar.webinarStatus === "LIVE"
   );
   return (
     <Tabs className="w-full flex flex-col gap-8" defaultValue="all">
@@ -36,6 +43,9 @@ const page = async () => {
             className="bg-secondary opacity-50 data-[state=active]:opacity-100 px-8 py-4"
           >
             All
+          </TabsTrigger>
+          <TabsTrigger value="live" className="bg-secondary px-8 py-4">
+            Live
           </TabsTrigger>
           <TabsTrigger value="upcoming" className="bg-secondary px-8 py-4">
             Upcoming
@@ -56,6 +66,20 @@ const page = async () => {
         ) : (
           <div className="w-full h-[200px] flex justify-center items-center text-primary font-semibold text-2xl col-span-12">
             No Webinar found.
+          </div>
+        )}
+      </TabsContent>
+      <TabsContent
+        value="live"
+        className="w-full grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-4 place-items-start place-content-start gap-x-6 gap-y-10"
+      >
+        {liveWebinars.length > 0 ? (
+          liveWebinars.map((webinar: Webinar, index: number) => {
+            return <WebinarCard key={index} webinar={webinar} />;
+          })
+        ) : (
+          <div className="w-full h-[200px] flex justify-center items-center text-primary font-semibold text-2xl col-span-12">
+            No live Webinar.
           </div>
         )}
       </TabsContent>
