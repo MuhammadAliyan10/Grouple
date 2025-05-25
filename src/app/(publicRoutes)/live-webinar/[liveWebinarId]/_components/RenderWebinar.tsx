@@ -7,6 +7,7 @@ import { useAttendeeStore } from "@/store/useAttendeeStore";
 import { toast } from "sonner";
 import LiveStreamState from "./LiveWebinar/LiveStreamState";
 import { WebinarWithPresenter } from "@/lib/type";
+import Participant from "./Particiapnt/Participant";
 
 type Props = {
   apiKey: string;
@@ -57,8 +58,7 @@ const RenderWebinar = ({
               user={checkUser}
             />
           ) : attendee ? (
-            // <Participant apiKey={apiKey} token={token} callId={callId} />
-            "Live stream for participant"
+            <Participant apiKey={apiKey} webinar={webinar} callId={callId} />
           ) : (
             <WebinarUpcomingState
               webinar={webinar}

@@ -106,7 +106,7 @@ const WaitingListComponent = ({
           {webinarStatus === WebinarStatusEnum.LIVE && (
             <span className="mr-2 h-2 w-2 bg-white rounded-full animate-pulse"></span>
           )}
-          {buttonText()}
+          <span className="text-white">{buttonText()}</span>
         </Button>
       </DialogTrigger>
       <DialogContent

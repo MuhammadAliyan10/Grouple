@@ -84,3 +84,15 @@ export const subscriptionPriceId = "price_1RSAdvDAvjzw3ABZXdcMVw72";
 export type WebinarWithPresenter = Webinar & {
   presenter: User;
 };
+
+export type AttendeeData = {
+  id: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    callStatus: string;
+  };
+  joinedAt: Date;
+  leftAt: Date | null;
+};

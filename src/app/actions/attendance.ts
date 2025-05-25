@@ -1,7 +1,7 @@
 "use server";
 
 import { prismaClient } from "@/lib/prismaClient";
-import { AttendanceData } from "@/lib/type";
+import { AttendanceData, AttendeeData } from "@/lib/type";
 import { AttendedTypeEnum, CtaTypeEnum, Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -215,7 +215,6 @@ export const registerAttendee = async (
   webinarId: string
 ) => {
   try {
-    // Validate required parameters
     if (!webinarId || !email) {
       return {
         success: false,
@@ -339,6 +338,107 @@ export const changeAttendanceType = async (
       status: 400,
       success: false,
       message: "Internal server error",
+    };
+  }
+};
+
+interface FetchAttendeeWebinarResponse {
+  success: boolean;
+  message?: string;
+  data: any[];
+  status: number;
+}
+export const fetchAttendeeWebinar = async (
+  userId: string
+): Promise<FetchAttendeeWebinarResponse> => {
+  try {
+    // Validate UUID format for userId
+    if (!isValidUUID(userId)) {
+      return {
+        success: false,
+        message: "Invalid user ID format",
+        status: 400,
+        data: [],
+      };
+    }
+
+    // Fetch webinars where the user is the presenter
+    const webinars = await prismaClient.webinar.findMany({
+      where: {
+        presenterId: userId,
+      },
+      select: {
+        id: true,
+        title: true,
+        attendances: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                callStatus: true,
+              },
+            },
+          },
+          orderBy: {
+            joinedAt: "desc",
+          },
+        },
+      },
+    });
+
+    // If no webinars found, return an empty but successful response
+    if (!webinars || webinars.length === 0) {
+      return {
+        success: true,
+        message: "No webinars found for this presenter",
+        data: [],
+        status: 200,
+      };
+    }
+
+    // Flatten and format the attendance data
+    const formattedData: AttendeeData[] = webinars.flatMap((webinar) =>
+      webinar.attendances.map((attendance) => ({
+        id: attendance.id,
+        user: {
+          id: attendance.user.id,
+          name: attendance.user.name,
+          email: attendance.user.email,
+          callStatus: attendance.user.callStatus,
+        },
+        joinedAt: attendance.joinedAt,
+        leftAt: attendance.leftAt,
+        webinar: {
+          id: webinar.id,
+          title: webinar.title,
+        },
+      }))
+    );
+
+    // If no attendances found, return an empty but successful response
+    if (formattedData.length === 0) {
+      return {
+        success: true,
+        message: "No attendees found for your webinars",
+        data: [],
+        status: 200,
+      };
+    }
+
+    return {
+      success: true,
+      data: formattedData,
+      status: 200,
+    };
+  } catch (error) {
+    console.error("Error fetching webinar attendees:", error);
+    return {
+      success: false,
+      message: "Internal server error",
+      status: 500,
+      data: [],
     };
   }
 };

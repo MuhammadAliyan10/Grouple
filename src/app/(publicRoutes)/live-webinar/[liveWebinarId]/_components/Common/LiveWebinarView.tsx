@@ -157,8 +157,8 @@ const LiveWebinarView = ({
             onClick={() => setShowChat(!showChat)}
             className={`px-3 py-1 rounded-full text-sm flex items-center space-x-1 ${
               showChat
-                ? "bg-accent-primary text-primary-foreground"
-                : "bg-muted/50"
+                ? "bg-accent-foreground text-primary-foreground"
+                : "bg-accent"
             }`}
           >
             <MessageSquare size={16} />
