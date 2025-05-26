@@ -2,7 +2,11 @@
 import { WebinarWithPresenter } from "@/lib/type";
 import { Loader2, MessageSquare, Users } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { ParticipantView, useCallStateHooks } from "@stream-io/video-react-sdk";
+import {
+  ParticipantView,
+  useCallStateHooks,
+  Call,
+} from "@stream-io/video-react-sdk";
 import { StreamChat } from "stream-chat";
 import { Chat, Channel, MessageList, MessageInput } from "stream-chat-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +16,7 @@ import CTADialogBox from "./CTADialogBox";
 import { changeWebinarStatus } from "@/app/actions/webinar";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import ObsDialogBox from "./ObsDialogBox";
 
 type Props = {
   showChat: boolean;
@@ -20,6 +25,7 @@ type Props = {
   isHost?: boolean;
   username: string;
   userId: string;
+  call: Call;
   userToken: string;
 };
 
@@ -31,6 +37,7 @@ const LiveWebinarView = ({
   username,
   userId,
   userToken,
+  call,
 }: Props) => {
   const { useParticipantCount, useParticipants } = useCallStateHooks();
   const viewersCount = useParticipantCount();
@@ -39,6 +46,7 @@ const LiveWebinarView = ({
   const [loading, setLoading] = useState(false);
   const [channel, setChannel] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [obsDialogOpen, setObsDialogOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const hostParticipant = participants.length > 0 ? participants[0] : null;
   const router = useRouter();
@@ -46,6 +54,10 @@ const LiveWebinarView = ({
   const handleEndStream = async () => {
     setLoading(true);
     try {
+      call.stopLive({
+        continue_recording: false,
+      });
+      call.endCall();
       const webinarState = await changeWebinarStatus(webinar.id, "ENDED");
       if (!webinarState?.success) {
         toast.error(webinarState?.message);
@@ -61,7 +73,6 @@ const LiveWebinarView = ({
   };
   useEffect(() => {
     const initChat = async () => {
-      // Validate inputs
       if (!userId || !userToken || !username) {
         setError("Missing userId, userToken, or username");
         return;
@@ -139,6 +150,24 @@ const LiveWebinarView = ({
       console.error("Failed to send CTA event:", err);
     }
   };
+  useEffect(() => {
+    call.on("call.rtmp_broadcast_started", () => {
+      toast.success("Webinar started successfully");
+      router.refresh();
+    });
+    call.on("call.rtmp_broadcast_failed", () => {
+      toast.error("Failed to start stream.");
+    });
+  }, [call]);
+
+  useEffect(() => {
+    call.on("call.recording_started", () => {
+      toast.success("Recording has been started.");
+    });
+    call.on("call.recording_failed", () => {
+      toast.error("Recording has been failed.");
+    });
+  }, [call]);
 
   if (error) {
     return (
@@ -220,10 +249,26 @@ const LiveWebinarView = ({
             <div className="flex justify-between items-center gap-x-2">
               {isHost && (
                 <div className="flex items-center space-x-1">
+                  <Button onClick={handleCTAButtonClick} variant={"outline"}>
+                    {webinar.ctaType === CtaTypeEnum.BOOK_A_CALL
+                      ? "Book a call"
+                      : "Buy Now"}
+                  </Button>
+                </div>
+              )}
+              {isHost && (
+                <div className="flex items-center space-x-1">
+                  <Button
+                    onClick={() => setObsDialogOpen(true)}
+                    className="mr-2"
+                    variant={"outline"}
+                  >
+                    Get Obs Credentials
+                  </Button>
                   <Button
                     onClick={handleEndStream}
                     disabled={loading}
-                    variant={"outline"}
+                    variant={"destructive"}
                   >
                     {loading ? (
                       <>
@@ -235,15 +280,6 @@ const LiveWebinarView = ({
                   </Button>
                 </div>
               )}
-              {isHost && (
-                <div className="flex items-center space-x-1">
-                  <Button onClick={handleCTAButtonClick} variant={"outline"}>
-                    {webinar.ctaType === CtaTypeEnum.BOOK_A_CALL
-                      ? "Book a call"
-                      : "Buy Now"}
-                  </Button>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -251,7 +287,7 @@ const LiveWebinarView = ({
           <Chat client={chatClient}>
             <Channel channel={channel}>
               <div className="w-72 bg-card border border-border rounded-lg overflow-hidden flex flex-col">
-                <div className="py-2 px-3 border-b border-border font-medium flex items-center justify-between">
+                <div className="py-2 text-primary px-3 border-b border-border font-medium flex items-center justify-between">
                   <span>Chat</span>
                   <span className="text-sx bg-muted px-2 py-0.5 rounded-full">
                     {viewersCount} viewers
@@ -272,6 +308,14 @@ const LiveWebinarView = ({
           onOpenChange={setDialogOpen}
           webinar={webinar}
           userId={userId}
+        />
+      )}
+      {obsDialogOpen && (
+        <ObsDialogBox
+          open={obsDialogOpen}
+          onOpenChange={setObsDialogOpen}
+          rtmpURL={`rtmps://ingress.stream-io-video.com:433/${process.env.NEXT_PUBLIC_STREAM_API_KEY}.livestream.${webinar.id}`}
+          streamKey={userToken}
         />
       )}
     </div>

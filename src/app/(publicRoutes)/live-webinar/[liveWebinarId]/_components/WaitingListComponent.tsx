@@ -99,14 +99,14 @@ const WaitingListComponent = ({
         <Button
           className={`${
             webinarStatus === WebinarStatusEnum.LIVE
-              ? "bg-red-600 hover:bg-red-700"
-              : "bg-primary hover:bg-primary/90"
+              ? "bg-red-600 hover:bg-red-700 text-white"
+              : "bg-primary hover:bg-primary/90 text-muted-foreground"
           }" rounded-md px-4 py-2 text-primary-foreground text-sm font-semibold`}
         >
           {webinarStatus === WebinarStatusEnum.LIVE && (
             <span className="mr-2 h-2 w-2 bg-white rounded-full animate-pulse"></span>
           )}
-          <span className="text-white">{buttonText()}</span>
+          <span>{buttonText()}</span>
         </Button>
       </DialogTrigger>
       <DialogContent

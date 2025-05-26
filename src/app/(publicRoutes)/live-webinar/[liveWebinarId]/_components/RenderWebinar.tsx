@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAttendeeStore } from "@/store/useAttendeeStore";
 import { toast } from "sonner";
 import LiveStreamState from "./LiveWebinar/LiveStreamState";
-import { WebinarWithPresenter } from "@/lib/type";
+import { StreamCallRecording, WebinarWithPresenter } from "@/lib/type";
 import Participant from "./Particiapnt/Participant";
 import { Button } from "@/components/ui/button";
 import { Undo2 } from "lucide-react";
@@ -14,17 +14,15 @@ import Link from "next/link";
 
 type Props = {
   apiKey: string;
-  token: string;
-  callId: string;
   checkUser: User | null;
   error: string;
   webinar: WebinarWithPresenter;
+  recording: StreamCallRecording | null;
 };
 
 const RenderWebinar = ({
   apiKey,
-  token,
-  callId,
+  recording,
   checkUser,
   error,
   webinar,

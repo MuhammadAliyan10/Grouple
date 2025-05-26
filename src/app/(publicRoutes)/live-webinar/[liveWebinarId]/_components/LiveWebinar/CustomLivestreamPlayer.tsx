@@ -32,12 +32,14 @@ const CustomLivestreamPlayer = ({
       return;
     }
     const myCall = client.call(callType, callId);
-    setCall(myCall);
-    myCall.join().catch((e) => console.log("Failed to join call", e));
-    return () => {
-      myCall.leave().catch((e) => console.log("Failed to leave call", e));
-      setCall(undefined);
-    };
+
+    myCall
+      .join({ create: true })
+      .then(() => {
+        setCall(myCall);
+      })
+      .catch((e) => console.log("Failed to join call", e));
+    return () => setCall(undefined);
   }, [client, callId, callType]);
   if (!call) {
     return null;
@@ -50,8 +52,9 @@ const CustomLivestreamPlayer = ({
         webinar={webinar}
         isHost={true}
         username={username}
-        userId={process.env.NEXT_PUBLIC_STREAM_USER_ID!}
+        userId={webinar.presenterId!}
         userToken={token}
+        call={call}
       />
     </StreamCall>
   );
