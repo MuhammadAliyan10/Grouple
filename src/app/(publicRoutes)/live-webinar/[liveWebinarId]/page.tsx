@@ -2,6 +2,8 @@ import { onAuthenticateUser } from "@/app/actions/auth";
 import { getWebinarById } from "@/app/actions/webinar";
 import React from "react";
 import RenderWebinar from "./_components/RenderWebinar";
+import { StreamCallRecording, WebinarWithPresenter } from "@/lib/type";
+import { WebinarStatusEnum } from "@prisma/client";
 
 type Props = {
   params: Promise<{
@@ -15,7 +17,10 @@ type Props = {
 const page = async ({ params, searchParams }: Props) => {
   const { liveWebinarId } = await params;
   const { error } = await searchParams;
+  let recording: null = null;
+
   const webinarData = await getWebinarById(liveWebinarId);
+
   if (!webinarData) {
     return (
       <div className="w-full min-h-screen flex justify-center items-center text-lg sm:text-4xl">
@@ -23,6 +28,9 @@ const page = async ({ params, searchParams }: Props) => {
       </div>
     );
   }
+  // if (webinarData?.webinars.webinarStatus === WebinarStatusEnum.ENDED) {
+  //   // recording = await getStreamRecoring(liveWebinarId)
+  // }
   const checkUser = await onAuthenticateUser();
   if (!checkUser.user) {
     return (
@@ -32,17 +40,14 @@ const page = async ({ params, searchParams }: Props) => {
     );
   }
   const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY! as string;
-  const token = process.env.STREAM_TOKEN! as string;
-  const callId = process.env.STREAM_CALL_ID! as string;
   return (
     <div className="w-full min-h-screen mx-auto">
       <RenderWebinar
         apiKey={apiKey}
-        token={token}
-        callId={callId}
+        recording={null}
         checkUser={checkUser.user || null}
         error={error}
-        webinar={webinarData}
+        webinar={webinarData as WebinarWithPresenter}
       />
     </div>
   );

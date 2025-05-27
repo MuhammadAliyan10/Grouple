@@ -275,3 +275,28 @@
 .animate-ping {
   animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
+
+.str-chat {
+  border-radius: 0.875rem !important;
+  background-color: var(--muted) !important;
+}
+.str-chat__list,
+.str-chat__message-input {
+  background: var(--card) !important;
+}
+.str-chat__message-bubble {
+  background-color: var(--muted) !important;
+  color: var(--primary) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 0.575rem;
+}
+
+.str-chat__textarea__textarea {
+  color: var(--primary) !important;
+}
+.str-chat__message-input {
+  padding: 0 !important;
+}
+.str-chat__channel {
+  justify-content: space-between !important;
+}

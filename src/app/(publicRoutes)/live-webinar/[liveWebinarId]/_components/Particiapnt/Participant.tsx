@@ -89,7 +89,7 @@ const Participant = ({ apiKey, webinar, callId }: Props) => {
           .catch((e) => console.log("Error Call Leaving", e));
       }
     };
-  }, [apiKey, callId, attendee, call, client]);
+  }, [apiKey, callId, attendee, call, client, webinar.id]);
   if (!attendee) {
     return (
       <div className="flex items-center justify-center bg-background h-screen text-foreground">
@@ -232,6 +232,7 @@ const Participant = ({ apiKey, webinar, callId }: Props) => {
           username={attendee.name}
           userId={attendee.id}
           userToken={token}
+          call={call}
         />
       </StreamCall>
     </StreamVideo>

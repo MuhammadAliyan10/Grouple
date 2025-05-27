@@ -55,13 +55,16 @@ const RenderWebinar = ({
           {checkUser?.id === webinar.presenterId ? (
             <LiveStreamState
               apiKey={apiKey}
-              token={token}
-              callId={callId}
+              callId={webinar.id}
               webinar={webinar}
               user={checkUser}
             />
           ) : attendee ? (
-            <Participant apiKey={apiKey} webinar={webinar} callId={callId} />
+            <Participant
+              apiKey={apiKey}
+              webinar={webinar}
+              callId={webinar.id}
+            />
           ) : (
             <WebinarUpcomingState
               title="The webinar is about to begin. Please stand by."
@@ -79,17 +82,6 @@ const RenderWebinar = ({
             <p className="text-muted-foreground text-xs">
               We regret to inform you that this webinar has been cancelled.
             </p>
-          </div>
-        </div>
-      ) : webinar?.webinarStatus === WebinarStatusEnum.ENDED ? (
-        <div className="flex justify-center items-center h-screen w-full">
-          <div className="text-center space-y-4">
-            <h3 className="text-2xl font-semibold text-primary">
-              {webinar.title}
-            </h3>
-            <p className="text-muted-foreground text-xs">
-              This webinar has concluded. Thank you for your interest.
-            </p>
             <Link href={"/webinars"}>
               <Button variant={"outline"}>
                 <Undo2 className="w-4 h-4 mr-1" />
@@ -98,6 +90,38 @@ const RenderWebinar = ({
             </Link>
           </div>
         </div>
+      ) : webinar?.webinarStatus === WebinarStatusEnum.ENDED ? (
+        recording?.url ? (
+          <div className="flex justify-center items-center h-screen w-full">
+            <div className="text-center space-y-4">
+              <h3 className="text-2xl font-semibold text-primary">
+                {webinar.title}
+              </h3>
+              <video
+                className="w-full h-full rounded-lg"
+                controls
+                src={recording.url}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-center items-center h-screen w-full">
+            <div className="text-center space-y-4">
+              <h3 className="text-2xl font-semibold text-primary">
+                {webinar.title}
+              </h3>
+              <p className="text-muted-foreground text-xs">
+                This webinar has concluded. Thank you for your interest.
+              </p>
+              <Link href={"/webinars"}>
+                <Button variant={"outline"}>
+                  <Undo2 className="w-4 h-4 mr-1" />
+                  Go back
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )
       ) : (
         <WebinarUpcomingState
           title="The webinar is about to begin. Please stand by."
